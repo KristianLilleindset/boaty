@@ -43,7 +43,7 @@ public class SerialReader implements SerialPortEventListener
     // arrayList holding all of the listeners interested in the serial communication
     private final ArrayList<SerialInputListener> listeners;
     
-        
+    private int fuck;
     
 
     /**
