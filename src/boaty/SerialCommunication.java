@@ -38,17 +38,16 @@ public class SerialCommunication implements SerialPortEventListener
     // variable holding the serialreader instance
     private SerialReader reader;
     
-    // variable holding the received data from the serialreader
-    private byte receivedData;
-    
+    // variable holding the instance of the calculation unit
+    private DataCalculation calculator;
     
     
     /**
      * 
      */
-    public SerialCommunication()
+    public SerialCommunication(DataCalculation calculator)
     {
-
+        this.calculator = calculator;
         
     }
     
@@ -99,7 +98,7 @@ public class SerialCommunication implements SerialPortEventListener
             System.out.println("Connected to serialport: " + portId);
             
             // create and start writer thread
-            writer = new SerialWriter(serialPort);
+            writer = new SerialWriter(serialPort, calculator);
             
             // create and start reader thread
             reader =  new SerialReader(serialPort);        
@@ -135,19 +134,6 @@ public class SerialCommunication implements SerialPortEventListener
     {
         this.writer.sendData(sendData);
     }
-    
-    
-    /**
-     * Get the data received from the serialport
-     * @return the received data
-     */
-    
-    public byte getReceivedData()
-    {
-        
-        return receivedData;
-    }
-    
     
     /**
      * 

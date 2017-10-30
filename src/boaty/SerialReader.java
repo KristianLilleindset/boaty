@@ -42,8 +42,7 @@ public class SerialReader implements SerialPortEventListener
     
     // arrayList holding all of the listeners interested in the serial communication
     private final ArrayList<SerialInputListener> listeners;
-    
-    private int fuck;
+
     
 
     /**
@@ -55,14 +54,18 @@ public class SerialReader implements SerialPortEventListener
     public SerialReader(SerialPort serialPort) throws TooManyListenersException
     {
         // creating the arrayList of listeners 
-        listeners = new ArrayList<>();
+        this.listeners = new ArrayList<>();
         
         
         this.serialPort = serialPort;  
         this.initialize();
     }
 
-    
+    /**
+     * Add a listener interested in the input data to the list. 
+     * listener has to implement the CalculationListener interface
+     * @param listener 
+     */
     public void addListener(SerialInputListener listener)
     {
         this.listeners.add(listener);
@@ -77,15 +80,15 @@ public class SerialReader implements SerialPortEventListener
     private void initialize() throws TooManyListenersException
     {
         // add eventlisteners   
-        serialPort.addEventListener(this);
+        this.serialPort.addEventListener(this);
             
-        serialPort.notifyOnDataAvailable(true);
+        this.serialPort.notifyOnDataAvailable(true);
             
         
         // creates an inputstream for reading data 
         try 
         {
-            input = serialPort.getInputStream();
+            this.input = this.serialPort.getInputStream();
         } catch (IOException ex) 
         {
             System.out.println(ex.toString());
@@ -111,12 +114,12 @@ public class SerialReader implements SerialPortEventListener
             try 
             {
                 // checks if there is data coming in on the serialport
-                if(input.available() >= 0)
+                if(this.input.available() >= 0)
                 {
                     try
                     {
                         // saving the input data to an byte array
-                        input.read(inputData,0,nrOfExpectedInputBytes);                         
+                        this.input.read(this.inputData,0,this.nrOfExpectedInputBytes);                         
                     }
                     
                     catch (IOException e)
@@ -127,12 +130,12 @@ public class SerialReader implements SerialPortEventListener
                 
                 // check if the received message has the correct startbyte, 
                 // stopbyte and number of bytes
-                if((inputData[firstByte] == 'a') && (inputData[lastByte] == 's'))
+                if((this.inputData[this.firstByte] == 'a') && (this.inputData[this.lastByte] == 's'))
                 {
                     
                     // save the correct data to the acceptedData variable, now
                     // available for being read.
-                    this.acceptedData = inputData;
+                    this.acceptedData = this.inputData;
                     
                     // reset the inputData variable for avoiding trouble when 
                     // next message is being received
@@ -152,10 +155,11 @@ public class SerialReader implements SerialPortEventListener
     
     /**
      * notify all listeners of data now available for reading
+     * listener has to implement the CalculationListener interface
      */
-    public void notifyListeners()
+    private void notifyListeners()
     {
-        for(SerialInputListener listener : listeners)
+        for(SerialInputListener listener : this.listeners)
         {
             listener.serialDataAvailable();
         }

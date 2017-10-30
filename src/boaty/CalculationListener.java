@@ -9,16 +9,7 @@ package boaty;
  *
  * @author kristianandrelilleindset
  */
-public class SailingCalculation
+public interface CalculationListener 
 {
-    
-    
-    
-    
-    public byte[] calculate(byte[] boatData, String cameraData)
-    {
-        byte[] result = null; 
-        
-        return result;
-    }
+    public void calculationsReady();
 }

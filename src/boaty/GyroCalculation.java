@@ -24,5 +24,4 @@ public class GyroCalculation
         
     }
     
-    public 
 }
