@@ -11,7 +11,7 @@ import java.io.OutputStream;
  *
  * @author kristianandrelilleindset
  */
-public class SerialWriter implements Runnable
+public class SerialWriter implements Runnable, CalculationListener
 {
     // variable holding an instance of the serialport
     private final SerialPort serialPort;
@@ -29,18 +29,30 @@ public class SerialWriter implements Runnable
     // message sent to the Arduino
     private final int stopByteNr = 13;
     
+    // variable holding the calcualtion for enabling reading new calculations
+    private final DataCalculation calculator;
+    
+    // variable holding info about if new calculation is ready for sending
+    private boolean dataAvailable;
+    
     
     /**
      * creating an instance of a SerialWriter
      * 
      * @param serialPort port found which is connected to the Arduino
+     * @param calculator
      */
-    public SerialWriter(SerialPort serialPort)
+    public SerialWriter(SerialPort serialPort, DataCalculation calculator)
     {
         this.serialPort = serialPort;
         
+        this.calculator = calculator;
+        
          // run the initialization of the serialwiter
         this.initialize();
+        
+        
+        this.calculator.addListener(this);
     }
     
     /**
@@ -65,15 +77,7 @@ public class SerialWriter implements Runnable
         
         this.dataToBeSent[stopByteNr] = 's';    // in byte format: 01110011
     }
-
-    /**
-     * 
-     */
-    @Override
-    public void run() 
-    {
-        
-    }
+    
     /**
      * sends the data received from the function call
      * 
@@ -97,5 +101,34 @@ public class SerialWriter implements Runnable
             System.out.println(ex.toString());
         }
     }
+
     
+    
+    /**
+     * Getting notyfied on data available from the calculation
+     */
+    @Override
+    public void calculationsReady() 
+    {
+        this.dataAvailable = true;
+    }
+    
+    
+    /**
+     * 
+     */
+    @Override
+    public void run() 
+    {
+        // check if there is new data available from the calculation
+        if(dataAvailable)
+        {
+            // get the calculated data from the calculator and send it
+            // with the sendData method.
+            this.sendData(this.calculator.getCalculatedData());
+            
+            // reset the flag telling if data is available
+            this.dataAvailable = false;
+        }
+    }
 }
